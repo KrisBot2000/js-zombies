@@ -7,7 +7,11 @@
  * @param {string} name     The item's name.
  * @property {string} name
  */
-
+class Item {
+  constructor(name){
+    this.name = name;
+  }
+}
 
 /**
  * Class => Weapon(name, damage)
@@ -24,7 +28,12 @@
  * @param {number} damage   The weapon's damage.
  * @property {number} damage
  */
-
+class Weapon extends Item {
+  constructor(name, damage) {
+    super(name);
+    this.damage = damage;
+  }
+}
 
 /**
  * Weapon Extends Item Class
@@ -49,6 +58,12 @@
  * @property {number} energy
  */
 
+class Food extends Item {
+  constructor (name, energy){
+    super(name);
+    this.energy = energy;
+  }
+}
 
 /**
  * Food Extends Item Class
@@ -78,7 +93,23 @@
  * @property {method} getPack              Returns private variable `pack`.
  * @property {method} getMaxHealth         Returns private variable `maxHealth`.
  */
-
+class Player {
+  constructor(name, health, strength, speed) {
+    this._pack = [];
+    this._maxHealth = health;
+    this.name = name;
+    this.health = health;
+    this.strength = strength;
+    this.speed = speed;
+    this.isAlive = true;
+    this.equipped = false;
+  }
+  getPack(){
+    return this._pack;
+  }
+  getMaxHealth(){
+    return this._maxHealth;
+  }
 
 /**
  * Player Class Method => checkPack()
@@ -91,6 +122,11 @@
  *
  * @name checkPack
  */
+
+
+  checkPack(){
+    console.log("Pack: "+this.getPack()[0]+" "+this.getPack()[1]+" "+this.getPack()[2]);
+  }
 
 
 /**
@@ -110,7 +146,17 @@
  * @param {Item/Weapon/Food} item   The item to take.
  * @return {boolean} true/false     Whether player was able to store item in pack.
  */
-
+  takeItem(item){
+    if(this.getPack().length<3){
+    this.getPack().push(item);
+    //prints name and pack in array form
+    console.log(this.name+" "+this.getPack());
+    return true;
+    }else{
+      console.log("Pack is full. Item could not be stored.");
+      return false;
+    }
+  }
 
 /**
  * Player Class Method => discardItem(item)
@@ -137,8 +183,17 @@
  * @param {Item/Weapon/Food} item   The item to discard.
  * @return {boolean} true/false     Whether player was able to remove item from pack.
  */
-
-
+discardItem(item){
+  var a = this.getPack().indexOf(item);
+  if (a===0 || a===1 || a===2){
+    this.getPack().splice(a, 1);
+    console.log(this.name+" "+item+" "+"was discarded.")
+    return true;
+  }else{//or if(a===-1)
+    console.log(item+" was not found. Nothing was discarded.");
+    return false;
+  }
+}
 /**
  * Player Class Method => equip(itemToEquip)
  * -----------------------------
@@ -158,7 +213,21 @@
  * @name equip
  * @param {Weapon} itemToEquip  The weapon item to equip.
  */
-
+equip(itemToEquip){
+  if (itemToEquip instanceof Weapon){
+    var a = this.getPack().indexOf(itemToEquip);
+    if (a===0 || a===1 || a===2){
+      if(this.equipped === false){
+        this.equipped = itemToEquip;
+        this.getPack().splice(a, 1);
+      }else{
+        var b = this.equipped;
+        this.equipped = itemToEquip;
+        this.getPack().splice(a, 1, b);
+      }
+    }
+  }
+}
 
 /**
  * Player Class Method => eat(itemToEat)
@@ -178,7 +247,19 @@
  * @name eat
  * @param {Food} itemToEat  The food item to eat.
  */
-
+eat(itemToEat){
+  if (itemToEat instanceof Food){
+    var a = this.getPack().indexOf(itemToEat);
+    if (a===0 || a===1 || a===2){
+      this.getPack().splice(a, 1);
+      if((this.health + itemToEat.energy) < this.getMaxHealth()){
+        this.health += itemToEat.energy;
+      }else{
+        this.health = this.getMaxHealth();
+      }
+    }
+  }
+}
 
 /**
  * Player Class Method => useItem(item)
@@ -192,7 +273,13 @@
  * @name useItem
  * @param {Item/Weapon/Food} item   The item to use.
  */
-
+useItem(item){
+  if(item instanceof Weapon){
+    this.equip(item);
+  }else if(item instanceof Food){ //could also be else if item instanceof Food
+    this.eat(item);
+  }
+}
 
 /**
  * Player Class Method => equippedWith()
@@ -207,8 +294,16 @@
  * @name equippedWith
  * @return {string/boolean}   Weapon name or false if nothing is equipped.
  */
-
-
+equippedWith(){
+  if(this.equipped===false){
+    console.log("no weapon equipped");
+    return false;
+  }else{
+    console.log(this.name+" "+this.equipped.name);
+    return this.equipped.name;
+  }
+}
+}
 /**
  * Class => Zombie(health, strength, speed)
  * -----------------------------
