@@ -146,12 +146,17 @@ function Player(name, health, strength, speed) {
  * @return {boolean} true/false     Whether player was able to store item in pack.
  */
   Player.prototype.takeItem = function(item){
-    if(this.getPack().length<3){
-    this.getPack().push(item);
-    console.log(this.name+" "+this.checkPack());
-    return true;
+    if(item instanceof Item || item instanceof Weapon || item instanceof Food){
+      if(this.getPack().length<3){
+      this.getPack().push(item);
+      console.log(this.name+" "+this.checkPack());
+      return true;
+      }else{
+        console.log("Pack is full. Item could not be stored.");
+        return false;
+      }
     }else{
-      console.log("Pack is full. Item could not be stored.");
+      console.log("Not an item.");
       return false;
     }
   }
@@ -182,13 +187,18 @@ function Player(name, health, strength, speed) {
  * @return {boolean} true/false     Whether player was able to remove item from pack.
  */
   Player.prototype.discardItem = function(item){
-    var a = this.getPack().indexOf(item);
-    if (a===0 || a===1 || a===2){
-      this.getPack().splice(a, 1);
-      console.log(this.name+" "+item.name+" "+"was discarded.")
-      return true;
-    }else{//or if(a===-1)
-      console.log(item.name+" was not found. Nothing was discarded.");
+    if(item instanceof Item || item instanceof Weapon || item instanceof Food){
+      var a = this.getPack().indexOf(item);
+      if (-1 < a < 3){
+        this.getPack().splice(a, 1);
+        console.log(this.name+" "+item.name+" "+"was discarded.")
+        return true;
+      }else{//or if(a===-1)
+        console.log(item.name+" was not found. Nothing was discarded.");
+        return false;
+      }
+    }else{
+      console.log("Not an item.");
       return false;
     }
   }
@@ -214,7 +224,7 @@ function Player(name, health, strength, speed) {
   Player.prototype.equip = function(itemToEquip){
     if (itemToEquip instanceof Weapon){
       var a = this.getPack().indexOf(itemToEquip);
-      if (a===0 || a===1 || a===2){
+      if (-1<a && a<3){
         if(this.equipped === false){
           this.equipped = itemToEquip;
           this.getPack().splice(a, 1);
@@ -223,6 +233,8 @@ function Player(name, health, strength, speed) {
           this.equipped = itemToEquip;
           this.getPack().splice(a, 1, b);
         }
+      }else{
+        return false;
       }
     }
   }
@@ -248,7 +260,7 @@ function Player(name, health, strength, speed) {
   Player.prototype.eat = function(itemToEat){
     if (itemToEat instanceof Food){
       var a = this.getPack().indexOf(itemToEat);
-      if (a===0 || a===1 || a===2){
+      if (-1<a && a<3){
         this.getPack().splice(a, 1);
         if((this.health + itemToEat.energy) < this.getMaxHealth()){
           this.health += itemToEat.energy;
